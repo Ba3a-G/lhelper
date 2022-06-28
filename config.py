@@ -1,0 +1,3 @@
+discordToken = "OTkwOTg4MjkxODg3MjE0NjI0.GkMLv_.qvipOCuX8H5J3t79QRaHpohTrublDMzlp_RmpM"
+access_key_id="AKIAX73C4CDVFPUZURXL"
+access_key_token="d9FENIWhADj9dDmjf1T3ofYO8CvxIe4lEDGyTEAC"
