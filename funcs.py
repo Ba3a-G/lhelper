@@ -5,6 +5,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from datetime import datetime as t
 from config import *
+import time
 
 dynamodb = boto3.resource(
     'dynamodb',
@@ -42,33 +43,6 @@ async def queryDB(table, username, key):
         return None
 
 
-async def cookieReAuth(savedCookie, pattern, session):
-    #Cookie reauth here
-    data = {
-        "client_id": "play-valorant-web-prod",
-        "nonce": "1",
-        "redirect_uri": "https://playvalorant.com/opt_in",
-        "response_type": "token id_token",
-        "response_mode": "query",
-        "scope": "account openid"
-    }
-    headers = {
-        "Cookie": savedCookie
-    }
-    async with session.post('https://auth.riotgames.com/api/v1/authorization/', json=data, headers=headers) as r:
-        data = await r.json()
-    try:
-        data = pattern.findall(data['response']['parameters']['uri'])[0]
-        access_token = data[0]
-        rawCookie = session.cookie_jar.filter_cookies('https://auth.riotgames.com/')
-        newCookie = ""
-        for each in rawCookie:          
-            newCookie += str(rawCookie[each]).split(" ")[1]+ "; "
-    except Exception as e:
-        print(e)
-        print('Cookie expired')
-        return "reAuthError", None
-    return access_token, newCookie
 
 async def validatePass(username, password, session, pattern):
     data = {
@@ -91,8 +65,7 @@ async def validatePass(username, password, session, pattern):
     }
     if 'https://' not in password:
         async with session.put('https://auth.riotgames.com/api/v1/authorization', json=data, headers=headers) as r:
-            print(r)
-            #data = await r.json()       
+            data = await r.json()       
     else:
         async with session.get(password) as r:
             data = await r.json()
